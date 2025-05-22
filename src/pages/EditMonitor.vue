@@ -24,6 +24,9 @@
                                         <option value="ping">
                                             Ping
                                         </option>
+                                        <option value="smtp">
+                                            SMTP
+                                        </option>
                                         <option value="snmp">
                                             SNMP
                                         </option>
@@ -109,7 +112,7 @@
                             <!-- Friendly Name -->
                             <div class="my-3">
                                 <label for="name" class="form-label">{{ $t("Friendly Name") }}</label>
-                                <input id="name" v-model="monitor.name" type="text" class="form-control" required data-testid="friendly-name-input">
+                                <input id="name" v-model="monitor.name" type="text" class="form-control" data-testid="friendly-name-input" :placeholder="defaultFriendlyName">
                             </div>
 
                             <!-- URL -->
@@ -281,8 +284,8 @@
                             </template>
 
                             <!-- Hostname -->
-                            <!-- TCP Port / Ping / DNS / Steam / MQTT / Radius / Tailscale Ping / SNMP only -->
-                            <div v-if="monitor.type === 'port' || monitor.type === 'ping' || monitor.type === 'dns' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'tailscale-ping' || monitor.type === 'snmp'" class="my-3">
+                            <!-- TCP Port / Ping / DNS / Steam / MQTT / Radius / Tailscale Ping / SNMP / SMTP only -->
+                            <div v-if="monitor.type === 'port' || monitor.type === 'ping' || monitor.type === 'dns' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'tailscale-ping' || monitor.type === 'smtp' || monitor.type === 'snmp'" class="my-3">
                                 <label for="hostname" class="form-label">{{ $t("Hostname") }}</label>
                                 <input
                                     id="hostname"
@@ -297,7 +300,7 @@
 
                             <!-- Port -->
                             <!-- For TCP Port / Steam / MQTT / Radius Type / SNMP -->
-                            <div v-if="monitor.type === 'port' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'snmp'" class="my-3">
+                            <div v-if="monitor.type === 'port' || monitor.type === 'steam' || monitor.type === 'gamedig' || monitor.type === 'mqtt' || monitor.type === 'radius' || monitor.type === 'smtp' || monitor.type === 'snmp'" class="my-3">
                                 <label for="port" class="form-label">{{ $t("Port") }}</label>
                                 <input id="port" v-model="monitor.port" type="number" class="form-control" required min="0" max="65535" step="1">
                             </div>
@@ -327,6 +330,18 @@
                                         SNMPv2c
                                     </option>
                                 </select>
+                            </div>
+
+                            <div v-if="monitor.type === 'smtp'" class="my-3">
+                                <label for="smtp_security" class="form-label">{{ $t("SMTP Security") }}</label>
+                                <select id="smtp_security" v-model="monitor.smtpSecurity" class="form-select">
+                                    <option value="secure">SMTPS</option>
+                                    <option value="nostarttls">Ignore STARTTLS</option>
+                                    <option value="starttls">Use STARTTLS</option>
+                                </select>
+                                <div class="form-text">
+                                    {{ $t("smtpHelpText") }}
+                                </div>
                             </div>
 
                             <!-- Json Query -->
@@ -1157,6 +1172,25 @@ export default {
     },
 
     computed: {
+        defaultFriendlyName() {
+            if (this.monitor.hostname) {
+                return this.monitor.hostname;
+            }
+            if (this.monitor.url) {
+                if (this.monitor.url !== "http://" && this.monitor.url !== "https://") {
+                    // Ensure monitor without a URL is not affected by invisible URL.
+                    try {
+                        const url = new URL(this.monitor.url);
+                        return url.hostname;
+                    } catch (e) {
+                        return this.monitor.url.replace(/https?:\/\//, "");
+                    }
+                }
+            }
+            // Default placeholder if neither hostname nor URL is available
+            return this.$t("defaultFriendlyName");
+        },
+
         ipRegex() {
 
             // Allow to test with simple dns server with port (127.0.0.1:5300)
@@ -1699,6 +1733,10 @@ message HealthCheckResponse {
         async submit() {
 
             this.processing = true;
+
+            if (!this.monitor.name) {
+                this.monitor.name = this.defaultFriendlyName;
+            }
 
             if (!this.isInputValid()) {
                 this.processing = false;
