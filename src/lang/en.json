@@ -838,7 +838,7 @@
     "pushDeerServerDescription": "Leave blank to use the official server",
     "PushDeer Key": "PushDeer Key",
     "SpugPush Template Code": "Template Code",
-    "wayToGetClickSendSMSToken": "You can get API Username and API Key from {0} .",
+    "wayToGetClickSendSMSToken": "You can get API Username and API Key from {here}.",
     "Custom Monitor Type": "Custom Monitor Type",
     "Google Analytics ID": "Google Analytics ID",
     "Edit Tag": "Edit Tag",
@@ -950,6 +950,7 @@
     "nostrRecipients": "Recipients Public Keys (npub)",
     "nostrRecipientsHelp": "npub format, one per line",
     "showCertificateExpiry": "Show Certificate Expiry",
+    "showOnlyLastHeartbeat": "Show Only Last Heartbeat",
     "noOrBadCertificate": "No/Bad Certificate",
     "cacheBusterParam": "Add the {0} parameter",
     "cacheBusterParamDescription": "Randomly generated parameter to skip caches.",
@@ -1190,5 +1191,10 @@
     "Maximum Retries": "Maximum Retries",
     "Template ID": "Template ID",
     "wayToGetClickSMSIRTemplateID": "Your template must contain an {uptkumaalert} field. You can create a new template {here}.",
-    "Recipient Numbers": "Recipient Numbers"
+    "Recipient Numbers": "Recipient Numbers",
+    "Notifications Enabled": "Notifications Enabled",
+    "Allow Notifications": "Allow Notifications",
+    "Browser not supported": "Browser not supported",
+    "Unable to get permission to notify": "Unable to get permission to notify (request either denied or ignored).",
+    "Webpush Helptext": "Web push only works with SSL (HTTPS) connections. For iOS devices, webpage must be added to homescreen beforehand."
 }
